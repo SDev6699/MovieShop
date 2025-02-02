@@ -1,0 +1,141 @@
+@model MovieShop.Web.ViewModels.MovieDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Title ?? "Movie Details";
+    // Example rating (hardcode or from your model)
+    decimal rating = 8.9m;
+    // Example genres (hardcode, or store them in your DB/Model)
+    var genres = new[] { "Adventure", "Action", "Science Fiction" };
+}
+
+<!-- Hero/Banner Section with backdrop -->
+<div class="position-relative mb-4"
+     style="background-image: url('@Model.BackdropUrl');
+     background-size: cover;
+     background-position: center;
+     min-height: 300px;">
+    <!-- Dark overlay to read text better -->
+    <div style="background-color: rgba(0,0,0,0.6); min-height: 300px;">
+        <div class="container py-5 text-white">
+            <div class="row">
+                <!-- Poster on the left -->
+                <div class="col-md-3">
+                    <img src="@Model.PosterUrl" alt="@Model.Title Poster" class="img-fluid rounded" />
+                </div>
+                <!-- Title / Tagline / Rating / Genres / Overview on the right -->
+                <div class="col-md-9">
+                    <h1>@Model.Title</h1>
+                    <p class="lead text-muted fs-5">@Model.Tagline</p>
+
+                    <!-- You could show runtime, release year, etc. under the title -->
+                    <span class="badge bg-success me-2 fs-6">@rating</span>
+                    <span class="text-secondary fs-6">@Model.Runtime ?? 0 @("m") | @Model.ReleaseDate?.Year</span>
+                    <div class="mt-2">
+                        @foreach (var g in genres)
+                        {
+                            <span class="badge bg-secondary me-1">@g</span>
+                        }
+                    </div>
+
+                    <p class="mt-3 fs-6">
+                        @Model.OverView
+                    </p>
+
+                    <!-- Example "Review" / "Buy" buttons -->
+                    <div class="mt-4">
+                        <a href="#" class="btn btn-outline-light me-2">Review</a>
+                        <a href="#" class="btn btn-light">$9.90 Buy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Container for Facts, Trailers, and Cast -->
+<div class="container">
+    <div class="row">
+        <!-- Left column: Movie Facts & Trailers -->
+        <div class="col-md-3">
+            <h5 class="mb-3">MOVIE FACTS</h5>
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <strong class="me-2"><i class="bi bi-calendar-event"></i> Release Date:</strong>
+                    @Model.ReleaseDate?.ToString("MMM dd, yyyy")
+                </li>
+                <li class="mb-2">
+                    <strong class="me-2"><i class="bi bi-clock-history"></i> Run Time:</strong>
+                    @(Model.Runtime ?? 0) min
+                </li>
+                <li class="mb-2">
+                    <strong class="me-2"><i class="bi bi-cash-coin"></i> Box Office:</strong>
+                    @Model.Revenue?.ToString("C")
+                </li>
+                <li class="mb-2">
+                    <strong class="me-2"><i class="bi bi-cash-stack"></i> Budget:</strong>
+                    @Model.Budget?.ToString("C")
+                </li>
+            </ul>
+
+            <hr />
+            <h5>TRAILERS</h5>
+            <ul class="list-unstyled">
+                @if (Model.Trailers != null && Model.Trailers.Any())
+                {
+                    @foreach (var trailer in Model.Trailers)
+                    {
+                        <li class="mb-2">
+                            <i class="bi bi-youtube"></i>
+                            <a href="@trailer.TrailerUrl" target="_blank">@trailer.Name</a>
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li>No trailers available.</li>
+                }
+            </ul>
+        </div>
+
+        <!-- Right column: Cast Table -->
+        <div class="col-md-9">
+            <h5 class="mb-3">CAST</h5>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Actor</th>
+                    <th>Character</th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (Model.Casts != null && Model.Casts.Any())
+                {
+                    @foreach (var cast in Model.Casts)
+                    {
+                        <tr>
+                            <td class="d-flex align-items-center">
+                                <!-- Optional: Show a small image if you have cast.ProfilePath -->
+                                @if (!string.IsNullOrEmpty(cast.ProfilePath))
+                                {
+                                    <img src="@cast.ProfilePath" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
+                                }
+                                @cast.Name
+                            </td>
+                            <td>@cast.Character</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2">No cast data available.</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Optionally, add some spacing at bottom -->
+<div class="mb-5"></div>

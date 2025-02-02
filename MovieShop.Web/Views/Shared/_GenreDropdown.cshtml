@@ -1,0 +1,17 @@
+@model IEnumerable<MovieShop.Web.Models.Genre>
+
+<button class="btn btn-secondary dropdown-toggle" type="button"
+        id="genreDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+    Genres
+</button>
+<ul class="dropdown-menu" aria-labelledby="genreDropdown">
+    @foreach (var g in Model)
+    {
+        <li>
+            <a class="dropdown-item"
+               href="@Url.Action("Index", "Home", new { genreId = g.Id })">
+                @g.Name
+            </a>
+        </li>
+    }
+</ul>

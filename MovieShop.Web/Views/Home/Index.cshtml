@@ -1,0 +1,104 @@
+@model IEnumerable<MovieShop.Web.Models.Movie>
+
+@{
+    ViewData["Title"] = "Home";
+
+    // Pagination data from ViewBag or Model
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    int? selectedGenre = ViewBag.SelectedGenre;
+
+    // How many page links do we want to show at once?
+    int maxPageButtons = 10;
+
+    // We’ll calculate the start/end range of pages to show,
+    // centering around the current page if possible.
+    int halfRange = maxPageButtons / 2;
+    int startPage = currentPage - halfRange;
+    if (startPage < 1) startPage = 1;
+
+    int endPage = startPage + maxPageButtons - 1;
+    if (endPage > totalPages) endPage = totalPages;
+
+    // If the end was adjusted, see if we should shift the start
+    int visibleCount = endPage - startPage + 1;
+    if (visibleCount < maxPageButtons)
+    {
+        startPage = endPage - maxPageButtons + 1;
+        if (startPage < 1) startPage = 1;
+    }
+}
+
+<h2>Movies</h2>
+
+<!-- 5 columns per row using Bootstrap -->
+<div class="row row-cols-1 row-cols-md-5 g-4">
+    @foreach (var movie in Model)
+    {
+        <div class="col">
+            <div class="card">
+                <!-- Clickable poster linking to Details page -->
+                <a href="@Url.Action("Details", "Movies", new { id = movie.Id })">
+                    <img src="@movie.PosterUrl" class="card-img-top" alt="@movie.Title Poster" />
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Smart Pagination Controls -->
+<nav aria-label="Movie Page Navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+
+        <!-- First Page Button -->
+        @if (currentPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                   href="@Url.Action("Index", new { genreId = selectedGenre, page = 1 })"
+                   aria-label="First">
+                    &laquo; First
+                </a>
+            </li>
+        }
+
+        <!-- Left Ellipsis if startPage > 1 -->
+        @if (startPage > 1)
+        {
+            <li class="page-item disabled">
+                <a class="page-link">...</a>
+            </li>
+        }
+
+        <!-- Loop from startPage to endPage -->
+        @for (int p = startPage; p <= endPage; p++)
+        {
+            <li class="page-item @(p == currentPage ? "active" : "")">
+                <a class="page-link"
+                   href="@Url.Action("Index", new { genreId = selectedGenre, page = p })">
+                    @p
+                </a>
+            </li>
+        }
+
+        <!-- Right Ellipsis if endPage < totalPages -->
+        @if (endPage < totalPages)
+        {
+            <li class="page-item disabled">
+                <a class="page-link">...</a>
+            </li>
+        }
+
+        <!-- Last Page Button -->
+        @if (currentPage < totalPages)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                   href="@Url.Action("Index", new { genreId = selectedGenre, page = totalPages })"
+                   aria-label="Last">
+                    Last &raquo;
+                </a>
+            </li>
+        }
+    </ul>
+</nav>
